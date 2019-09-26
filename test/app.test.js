@@ -17,5 +17,18 @@ describe('GET /apps', () => {
     return supertest(app).get('/apps').query({ sort: 'MISTAKE' })
       .expect(400, 'Sort parameter must be either rating or app');
   });
-  
+  it('should sort the list by rating', () => {
+    return supertest(app).get('/apps').query({ sort: 'Rating' })
+      .expect(200).expect('Content-Type', /json/)
+      .then(res => {
+        expect(res.body).to.be.an('array');
+        let i = 0;
+        let sorted = true;
+        while (sorted && i < res.body.length -1){
+          sorted = sorted && res.body[i].Rating <= res.body[i +1].Rating;
+          i++;
+        }
+      });
+  });
+
 });
